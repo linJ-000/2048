@@ -13,11 +13,16 @@
 #include "render.h"
 #include "slide.h"
 #include "logic.h"
+#include "infrared.h"
 
 int slideDir = 0;				//滑动方向
 u8 key;									//按键标示
-u16 game[4][4] = {{0,2,16,32},{4,256,512,2048},{4,16,8,32},{0,8,16,32}};
-u16 score = 0;					//游戏得分
+u16 Lgame[4][4] = {{0,2,16,32},{4,256,512,2048},{4,16,8,32},{0,8,16,32}};
+
+///////事件标志组///////
+#define SCAN_FLAG 0x01
+#define REMOTE_FLAG 0x01
+OS_FLAG_GRP PlayFlags;
 
 #define START_TASK_PRIO		3   	//任务优先级
 #define START_STK_SIZE 		640    //任务堆栈大小
@@ -25,30 +30,32 @@ OS_TCB StartTaskTCB;    				//任务控制块
 CPU_STK START_TASK_STK[START_STK_SIZE];   //任务堆栈	
 void start_task(void *p_arg);   //任务函数
 
-#define KEY_TASK_PRIO		4			//任务优先级
-#define KEY_STK_SIZE 		128		//任务堆栈大小	
-OS_TCB KeyTaskTCB;							//任务控制块
-CPU_STK KEY_TASK_STK[KEY_STK_SIZE];			//任务堆栈	
-void key_task(void *p_arg);		//任务函数
-
 #define LED1_TASK_PRIO		5			//任务优先级
 #define LED1_STK_SIZE 		128		//任务堆栈大小	
 OS_TCB Led1TaskTCB;							//任务控制块
 CPU_STK LED1_TASK_STK[LED1_STK_SIZE];			//任务堆栈	
 void led1_task(void *p_arg);		//任务函数
 
-#define LCD1_TASK_PRIO		6			//任务优先级
+//渲染任务
+#define LCD1_TASK_PRIO		7			//任务优先级
 #define LCD1_STK_SIZE		128			//任务堆栈大小
 OS_TCB	Lcd1TaskTCB;						//任务控制块
 __align(8) CPU_STK	LCD1_TASK_STK[LCD1_STK_SIZE];		//任务堆栈
 void lcd1_task(void *p_arg);		//任务函数
 
 //触摸屏扫描任务
-#define SCAN_TASK_PRIO		7			//任务优先级
+#define SCAN_TASK_PRIO		8			//任务优先级
 #define SCAN_STK_SIZE 		128		//任务堆栈大小	
 OS_TCB ScanTaskTCB;							//任务控制块
 CPU_STK SCAN_TASK_STK[SCAN_STK_SIZE];			//任务堆栈	
 void scan_task(void *p_arg);		//任务函数
+
+//红外遥控器任务
+#define REMOTE_TASK_PRIO		8			//任务优先级
+#define REMOTE_STK_SIZE 		128		//任务堆栈大小	
+OS_TCB RemoteTaskTCB;							//任务控制块
+CPU_STK REMOTE_TASK_STK[REMOTE_STK_SIZE];			//任务堆栈	
+void remote_task(void *p_arg);		//任务函数
 
 int main(void)
 {
@@ -62,6 +69,7 @@ int main(void)
 	LCD_Init();					//LCD初始化
 	KEY_Init();				//按键初始化		 	
 	tp_dev.init();			//触摸屏初始化
+	Remote_Init();			//红外接收初始化	
 	
 	OSInit(&err);		//初始化UCOSIII
 	OS_CRITICAL_ENTER();//进入临界区
@@ -106,7 +114,7 @@ void start_task(void *p_arg)
 #endif		
 	
 	OS_CRITICAL_ENTER();	//进入临界区		
-				 
+	
 	//创建LED1任务
 	OSTaskCreate((OS_TCB 	* )&Led1TaskTCB,		
 				 (CPU_CHAR	* )"led1 task", 		
@@ -121,23 +129,8 @@ void start_task(void *p_arg)
                  (void   	* )0,				
                  (OS_OPT      )OS_OPT_TASK_STK_CHK|OS_OPT_TASK_STK_CLR, 
                  (OS_ERR 	* )&err);	
-	
-	//创建按键任务
-	OSTaskCreate((OS_TCB 	* )&KeyTaskTCB,		
-				 (CPU_CHAR	* )"key task", 		
-                 (OS_TASK_PTR )key_task, 			
-                 (void		* )0,					
-                 (OS_PRIO	  )KEY_TASK_PRIO,     	
-                 (CPU_STK   * )&KEY_TASK_STK[0],	
-                 (CPU_STK_SIZE)KEY_STK_SIZE/10,	
-                 (CPU_STK_SIZE)KEY_STK_SIZE,		
-                 (OS_MSG_QTY  )0,					
-                 (OS_TICK	  )0,					
-                 (void   	* )0,				
-                 (OS_OPT      )OS_OPT_TASK_STK_CHK|OS_OPT_TASK_STK_CLR, 
-                 (OS_ERR 	* )&err);
 								 
-	//创建渲染游戏界面任务
+	//创建游戏任务
 	OSTaskCreate((OS_TCB 	* )&Lcd1TaskTCB,		
 				 (CPU_CHAR	* )"lcd1 task", 		
                  (OS_TASK_PTR )lcd1_task, 			
@@ -165,7 +158,22 @@ void start_task(void *p_arg)
                  (OS_TICK	  )0,					
                  (void   	* )0,				
                  (OS_OPT      )OS_OPT_TASK_STK_CHK|OS_OPT_TASK_STK_CLR, 
-                 (OS_ERR 	* )&err);							 
+                 (OS_ERR 	* )&err);
+								 
+	//创建红外遥控器任务
+	OSTaskCreate((OS_TCB 	* )&RemoteTaskTCB,		
+				 (CPU_CHAR	* )"remote task", 		
+                 (OS_TASK_PTR )remote_task, 			
+                 (void		* )0,					
+                 (OS_PRIO	  )REMOTE_TASK_PRIO,     	
+                 (CPU_STK   * )&REMOTE_TASK_STK[0],	
+                 (CPU_STK_SIZE)REMOTE_STK_SIZE/10,	
+                 (CPU_STK_SIZE)REMOTE_STK_SIZE,		
+                 (OS_MSG_QTY  )0,					
+                 (OS_TICK	  )0,					
+                 (void   	* )0,				
+                 (OS_OPT      )OS_OPT_TASK_STK_CHK|OS_OPT_TASK_STK_CLR, 
+                 (OS_ERR 	* )&err);
 								 
 	OS_TaskSuspend((OS_TCB*)&StartTaskTCB,&err);		//挂起开始任务			 
 	OS_CRITICAL_EXIT();	//退出临界区	
@@ -183,23 +191,6 @@ void led1_task(void *p_arg)
 	}
 }
 
-//按键任务——重新开始
-void key_task(void *p_arg)
-{
-	OS_ERR err;
-	p_arg = p_arg;
-	while(1)
-	{
-		key=KEY_Scan(0);
-		if(key==KEY0_PRES)
-		{
-			//重新开始
-			slideTest(0);
-		}
-		OSTimeDly(2, OS_OPT_TIME_HMSM_STRICT, &err);
-	}
-}
-
 //触摸屏扫描任务
 void scan_task(void *p_arg)
 {
@@ -212,37 +203,66 @@ void scan_task(void *p_arg)
 	{
 		sli=slide();
 		if(sli!= 0)
-		{
+		{		
 			OS_CRITICAL_ENTER();
 			slideDir = sli;
 			OS_CRITICAL_EXIT();
+			OS_FlagPost(&PlayFlags, SCAN_FLAG, OS_OPT_POST_FLAG_SET, 0, &err);	
 		}
-		OSTimeDly(2, OS_OPT_TIME_HMSM_STRICT, &err);
+		OSTimeDly(20, OS_OPT_TIME_HMSM_STRICT, &err);
 	}
 }
 
-//游戏界面渲染任务
-void lcd1_task(void *p_arg)
+//红外遥控器任务
+void remote_task(void *p_arg)
 {
+	int rem;
 	OS_ERR err;
 	CPU_SR_ALLOC();
 	p_arg = p_arg;
 	
-	/* interface Init */
+	while(1)
+	{
+		rem=infrared();
+		if(rem!= 0)
+		{
+			OS_CRITICAL_ENTER();
+			slideDir = rem;
+			OS_CRITICAL_EXIT();
+			OS_FlagPost(&PlayFlags, REMOTE_FLAG, OS_OPT_POST_FLAG_SET, 0, &err);
+		}
+		OSTimeDlyHMSM(0,0,0,500,OS_OPT_TIME_HMSM_STRICT,&err);
+	}
+}
+
+//游戏任务
+void lcd1_task(void *p_arg)
+{
+	int res;
+	OS_ERR err;
+	CPU_SR_ALLOC();
+	p_arg = p_arg;
+	
+	/* Init */
+	OSFlagCreate(&PlayFlags, "Play Flags", 0, &err);
 	OS_CRITICAL_ENTER();
+	initialize();
 	drawStage();
-	drawInterface(game, score);
+	drawInterface(game, sum_score);
 	OS_CRITICAL_EXIT();
 	
 	while(1)
 	{
+		//等待事件标志组
+		OSFlagPend(&PlayFlags, SCAN_FLAG|REMOTE_FLAG, 0, OS_OPT_PEND_FLAG_SET_ANY|OS_OPT_PEND_FLAG_CONSUME, 0, &err);
+
 		OS_CRITICAL_ENTER();
-		if(slideDir!=0)
-		{
-			slideTest(slideDir);
-		}	
+		res = moveAndJudge(slideDir);
+		game_result(res);
+		drawInterface(game, sum_score);
 		slideDir = 0;
 		OS_CRITICAL_EXIT();
-		OSTimeDly(2, OS_OPT_TIME_HMSM_STRICT, &err);
+
+		OSTimeDly(20, OS_OPT_TIME_HMSM_STRICT, &err);
 	}
 }

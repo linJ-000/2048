@@ -52,3 +52,4 @@
 ..\obj\main.o: ..\MODULE\render.h
 ..\obj\main.o: ..\MODULE\slide.h
 ..\obj\main.o: ..\MODULE\logic.h
+..\obj\main.o: ..\MODULE\infrared.h

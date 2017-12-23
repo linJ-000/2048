@@ -12,7 +12,7 @@ codin point =
 };
 
 /* listen screen slide event */
-/* return none:0; left:1; top:2; right:3; bottom:4 */
+/* return none:0; left:1; up:2; right:3; down:4 */
 int slide(void)
 {
 	tp_dev.scan(0);

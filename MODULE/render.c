@@ -8,7 +8,7 @@ void drawInterface(u16 array[4][4], u16 score)
 {
 	int i,j;
 	u16 color;
-	
+	LCD_Fill(120,27,220,60,0xFFFF);
 	LCD_ShowxNum(160, 30, score, 4, 24, 1);
 	for(i=0; i<4; i++)
 	{
@@ -17,7 +17,25 @@ void drawInterface(u16 array[4][4], u16 score)
 			color = getColor(array[i][j]);
 			LCD_Fill(5+6*(j+1)+50*j, 85+6*(i+1)+50*i, 5+6*(j+1)+50*(j+1), 85+6*(i+1)+50*(i+1), color);
 			POINT_COLOR = BLACK;
-			LCD_ShowxNum(5+6*(j+1)+50*j, 85+6*(i+1)+50*i, array[i][j], 4, 24, 1);
+			if (array[i][j]!=0)
+			{
+				if(array[i][j]<10)
+				{
+					LCD_ShowxNum(5+6*(j+1)+50*j+8, 85+6*(i+1)+50*i+13, array[i][j], 2, 24, 1);
+				}
+				else if(array[i][j]<100)
+				{
+					LCD_ShowxNum(5+6*(j+1)+50*j+2, 85+6*(i+1)+50*i+13, array[i][j], 3, 24, 1);
+				}
+				else if(array[i][j]<1000)
+				{
+					LCD_ShowxNum(5+6*(j+1)+50*j+8, 85+6*(i+1)+50*i+13, array[i][j], 3, 24, 1);
+				}
+				else
+				{
+					LCD_ShowxNum(5+6*(j+1)+50*j+1, 85+6*(i+1)+50*i+13, array[i][j], 4, 24, 1);
+			  }
+			}
 		}
 	}
 }
@@ -27,17 +45,18 @@ u16 getColor(u16 num)
 {
 	u16 color;
 	switch(num){
-		case 0:   color=0x780F;break;
-		case 2:   color=0x03E0;break;
-		case 4:   color=0x7800;break;
-		case 8:   color=0x7BE0;break;
-		case 16:  color=0x7BEF;break;
-		case 32:  color=0x07E0;break;
+		case 0:   color=0xFFFF;break;
+		case 2:   color=0xFFE0;break;
+		case 4:   color=0xCFFF;break;
+		case 8:   color=0x2EEC;break;
+		case 16:  color=0x07FF;break;
+		case 32:  color=0xFDEF;break;
 		case 64:  color=0xF81F;break;
-		case 128: color=0xFFE0;break;
-		case 256: color=0xC618;break;
-		case 512: color=0x780F;break;
-		case 2048:color=0xF74F;break;
+		case 128: color=0x07E0;break;
+		case 256: color=0x7D7C;break;
+		case 512: color=0xFBE0;break;
+		case 1024: color=0xFA8B;break;
+		case 2048:color=0xF807;break;
 	}
 	return color;
 }
@@ -59,4 +78,20 @@ void slideTest(int t)
 	LCD_Fill(0,40,100,80,WHITE);
 	POINT_COLOR = BLACK;
 	LCD_ShowNum(0,40, t, 1, 16);
+}
+
+void game_result(int i)
+{
+	if(i==1)
+	{
+		LCD_ShowString(10,60,100,30,24,"You win.");
+	}
+	else if(i==2)
+	{
+		LCD_ShowString(10,60,100,30,24,"You lose.");
+	}
+	else
+	{
+		LCD_Fill(0,60,120,83,0xFFFF);
+	}	
 }
