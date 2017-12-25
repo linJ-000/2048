@@ -6,9 +6,9 @@
 
 codin point = 
 {
-	0,
-	{0},
-	{0},
+	0,	//已读取的点的个数
+	{0},	//两个点的x坐标
+	{0},	//两个点的y坐标
 };
 
 /* listen screen slide event */
@@ -55,6 +55,18 @@ int slide(void)
 			}
 		}
 		point.t = 0;
+	}
+	return 0;
+}
+
+/* click start botton */
+int start(void)
+{
+	tp_dev.scan(0);
+	if(tp_dev.sta&TP_PRES_DOWN)
+	{
+		if(tp_dev.x[0]>70 && tp_dev.x[0]<170 && tp_dev.y[0]>250 && tp_dev.y[0]<290)
+			return 1;
 	}
 	return 0;
 }

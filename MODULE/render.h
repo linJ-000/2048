@@ -8,4 +8,5 @@ void drawStage(void);			//画不需要随游戏变动的部分，初始化时使用
 void slideTest(int t);
 u16 getColor(u16 num);		//不同的数字对应的不同背景色
 void game_result(int i);
+void start_page(void);
 #endif

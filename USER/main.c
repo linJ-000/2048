@@ -225,13 +225,15 @@ void remote_task(void *p_arg)
 	{
 		rem=infrared();
 		if(rem!= 0)
-		{
+		{	
 			OS_CRITICAL_ENTER();
 			slideDir = rem;
+			printf("rem=%d\n", rem);
 			OS_CRITICAL_EXIT();
 			OS_FlagPost(&PlayFlags, REMOTE_FLAG, OS_OPT_POST_FLAG_SET, 0, &err);
+			OSTaskSuspend(&RemoteTaskTCB, &err);
 		}
-		OSTimeDlyHMSM(0,0,0,500,OS_OPT_TIME_HMSM_STRICT,&err);
+		OSTimeDly(80, OS_OPT_TIME_HMSM_STRICT, &err);
 	}
 }
 
@@ -242,6 +244,14 @@ void lcd1_task(void *p_arg)
 	OS_ERR err;
 	CPU_SR_ALLOC();
 	p_arg = p_arg;
+	
+	start_page();
+	while(1)
+	{
+		if(start())
+			break;
+		OSTimeDly(20, OS_OPT_TIME_HMSM_STRICT, &err);
+	}
 	
 	/* Init */
 	OSFlagCreate(&PlayFlags, "Play Flags", 0, &err);
@@ -262,7 +272,9 @@ void lcd1_task(void *p_arg)
 		drawInterface(game, sum_score);
 		slideDir = 0;
 		OS_CRITICAL_EXIT();
+		printf("move\n");
 
-		OSTimeDly(20, OS_OPT_TIME_HMSM_STRICT, &err);
+		OSTimeDly(80, OS_OPT_TIME_HMSM_STRICT, &err);
+		OSTaskResume(&RemoteTaskTCB, &err);
 	}
 }

@@ -10,4 +10,5 @@ typedef struct
 
 u16 s_abs(u16 x1,u16 x2);
 int slide(void);
+int start(void);
 #endif

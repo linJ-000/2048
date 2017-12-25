@@ -27,9 +27,10 @@ u16 put_random()
 {
 	u16 N, n, ran, ran4;
 	u16 i, j;
+	OS_ERR err;
 	N = 0;
 	n = 0;
-	srand(1);
+	srand(OSTimeGet(&err));
 
 	for (i = 0; i < 4; i++)
 	{

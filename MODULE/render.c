@@ -70,6 +70,7 @@ void drawStage()
 	LCD_ShowNum(5,5, 2048, 4, 24);
 	POINT_COLOR = GRAY;
 	LCD_ShowString(160, 5, 80, 40, 24, "Score");
+	
 }
 
 /* slide test */
@@ -79,7 +80,6 @@ void slideTest(int t)
 	POINT_COLOR = BLACK;
 	LCD_ShowNum(0,40, t, 1, 16);
 }
-
 void game_result(int i)
 {
 	if(i==1)
@@ -94,4 +94,13 @@ void game_result(int i)
 	{
 		LCD_Fill(0,60,120,83,0xFFFF);
 	}	
+}
+void start_page()
+{
+	LCD_Fill(0, 0, 240, 360, 0xFFE0);
+	LCD_ShowxNum(100,100, 2048, 4, 24,1);
+	LCD_ShowString(45,126,195,152,24,"Slide screen!");
+	LCD_ShowString(70,154,170,180,24,"GET 2048!");
+	LCD_Fill(70, 250, 170, 290, 0x7D7C);
+	LCD_ShowString(94,258,146,282,24,"Start");
 }
