@@ -17,7 +17,6 @@
 
 int slideDir = 0;				//滑动方向
 u8 key;									//按键标示
-u16 Lgame[4][4] = {{0,2,16,32},{4,256,512,2048},{4,16,8,32},{0,8,16,32}};
 
 ///////事件标志组///////
 #define SCAN_FLAG 0x01
@@ -230,7 +229,12 @@ void remote_task(void *p_arg)
 			slideDir = rem;
 			printf("rem=%d\n", rem);
 			OS_CRITICAL_EXIT();
-			OS_FlagPost(&PlayFlags, REMOTE_FLAG, OS_OPT_POST_FLAG_SET, 0, &err);
+			OS_FlagPost(&PlayFlags, 
+				REMOTE_FLAG, 
+				OS_OPT_POST_FLAG_SET, 
+				0, 
+				&err
+			);
 			OSTaskSuspend(&RemoteTaskTCB, &err);
 		}
 		OSTimeDly(80, OS_OPT_TIME_HMSM_STRICT, &err);
@@ -264,7 +268,13 @@ void lcd1_task(void *p_arg)
 	while(1)
 	{
 		//等待事件标志组
-		OSFlagPend(&PlayFlags, SCAN_FLAG|REMOTE_FLAG, 0, OS_OPT_PEND_FLAG_SET_ANY|OS_OPT_PEND_FLAG_CONSUME, 0, &err);
+		OSFlagPend(&PlayFlags, 
+			SCAN_FLAG|REMOTE_FLAG, 
+			0, 
+			OS_OPT_PEND_FLAG_SET_ANY|OS_OPT_PEND_FLAG_CONSUME, 
+			0, 
+			&err
+		);
 
 		OS_CRITICAL_ENTER();
 		res = moveAndJudge(slideDir);

@@ -11,8 +11,6 @@ codin point =
 	{0},	//两个点的y坐标
 };
 
-/* listen screen slide event */
-/* return none:0; left:1; up:2; right:3; down:4 */
 int slide(void)
 {
 	tp_dev.scan(0);
@@ -35,7 +33,8 @@ int slide(void)
 		{
 			point.t = 0;
 			//由两个点判断滑动方向
-			if(s_abs(point.x[0], point.x[1]) >= 80 && s_abs(point.y[0], point.y[1]) <= 15 )
+			if(s_abs(point.x[0], point.x[1]) >= 45 
+				&& s_abs(point.y[0], point.y[1]) <= 15 )
 			{
 				if(point.x[0] < point.x[1])
 				{
@@ -43,7 +42,8 @@ int slide(void)
 				}else{
 					return 1;
 				}
-			}else if(s_abs(point.y[0], point.y[1]) >= 80 && s_abs(point.x[0], point.x[1]) <= 15){
+			}else if(s_abs(point.y[0], point.y[1]) >= 45 
+			&& s_abs(point.x[0], point.x[1]) <= 15){
 				if(point.y[0] < point.y[1])
 				{
 					return 4;
@@ -65,7 +65,8 @@ int start(void)
 	tp_dev.scan(0);
 	if(tp_dev.sta&TP_PRES_DOWN)
 	{
-		if(tp_dev.x[0]>70 && tp_dev.x[0]<170 && tp_dev.y[0]>250 && tp_dev.y[0]<290)
+		if(tp_dev.x[0]>70 && tp_dev.x[0]<170 
+			&& tp_dev.y[0]>250 && tp_dev.y[0]<290)
 			return 1;
 	}
 	return 0;

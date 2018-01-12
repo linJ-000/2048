@@ -54,8 +54,8 @@
 "..\obj\os_cpu_c.o"
 "..\obj\os_app_hooks.o"
 "..\obj\render.o"
-"..\obj\slide.o"
 "..\obj\logic.o"
+"..\obj\slide.o"
 "..\obj\infrared.o"
 --strict --scatter "..\OBJ\MALLOC.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols

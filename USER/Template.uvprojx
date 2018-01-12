@@ -779,14 +779,14 @@
               <FilePath>..\MODULE\render.c</FilePath>
             </File>
             <File>
-              <FileName>slide.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\MODULE\slide.c</FilePath>
-            </File>
-            <File>
               <FileName>logic.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\MODULE\logic.c</FilePath>
+            </File>
+            <File>
+              <FileName>slide.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MODULE\slide.c</FilePath>
             </File>
             <File>
               <FileName>infrared.c</FileName>

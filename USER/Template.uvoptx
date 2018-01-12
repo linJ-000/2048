@@ -1199,8 +1199,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\MODULE\slide.c</PathWithFileName>
-      <FilenameWithoutPath>slide.c</FilenameWithoutPath>
+      <PathWithFileName>..\MODULE\logic.c</PathWithFileName>
+      <FilenameWithoutPath>logic.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1212,8 +1212,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\MODULE\logic.c</PathWithFileName>
-      <FilenameWithoutPath>logic.c</FilenameWithoutPath>
+      <PathWithFileName>..\MODULE\slide.c</PathWithFileName>
+      <FilenameWithoutPath>slide.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

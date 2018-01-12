@@ -26,17 +26,48 @@ Project File Date:  12/07/2017
 
 <h2>Output:</h2>
 Build target 'Target 1'
+compiling main.c...
+..\MODULE\slide.h(1): error:  #169: expected a declaration
+..\MODULE\slide.h(1): error:  #10: "#" not expected here
+..\MODULE\slide.h(9): warning:  #12-D: parsing restarts here after previous syntax error
+  }codin;
+..\MODULE\slide.h(14): error:  #36: the #if for this directive is missing
+  #endif
+main.c: 1 warning, 3 errors
 compiling slide.c...
-linking...
-Program Size: Code=87474 RO-data=7742 RW-data=408 ZI-data=16912  
-FromELF: creating hex file...
-"..\OBJ\MALLOC.axf" - 0 Error(s), 0 Warning(s).
+..\MODULE\slide.h(1): error:  #169: expected a declaration
+..\MODULE\slide.h(1): error:  #10: "#" not expected here
+..\USER\stm32f10x.h(472): warning:  #12-D: parsing restarts here after previous syntax error
+  } IRQn_Type;
+..\CORE\core_cm3.h(1502): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE void NVIC_EnableIRQ(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1515): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE void NVIC_DisableIRQ(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1529): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE uint32_t NVIC_GetPendingIRQ(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1542): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE void NVIC_SetPendingIRQ(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1555): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE void NVIC_ClearPendingIRQ(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1569): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE uint32_t NVIC_GetActive(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1586): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
+..\CORE\core_cm3.h(1609): error:  #20: identifier "IRQn_Type" is undefined
+  static __INLINE uint32_t NVIC_GetPriority(IRQn_Type IRQn)
+..\CORE\core_cm3.h(1699): error:  #20: identifier "SysTick_IRQn" is undefined
+    NVIC_SetPriority (SysTick_IRQn, (1<<__NVIC_PRIO_BITS) - 1);  /* set Priority for Cortex-M0 System Interrupts */
+..\MODULE\slide.h(14): error:  #36: the #if for this directive is missing
+  #endif
+..\MODULE\slide.c: 1 warning, 12 errors
+"..\OBJ\MALLOC.axf" - 15 Error(s), 2 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\Admin\Desktop\2048\USER\RTE
   E:\MDK5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include
 
 <h2>Collection of Component Files used:</h2>
+Target not created.
 </pre>
 </body>
 </html>
